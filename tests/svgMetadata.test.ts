@@ -10,7 +10,10 @@ describe('svg diagram metadata', () => {
 		const metadata = {
 			schemaVersion: 1,
 			editor: 'drawio',
-			payload: { xml: '<mxfile>hello</mxfile>' },
+			project: {
+				format: 'drawio-mxfile',
+				data: '<mxfile>hello</mxfile>',
+			},
 		} as const;
 
 		const updated = embedDiagramMetadata(svg, metadata);
@@ -24,21 +27,37 @@ describe('svg diagram metadata', () => {
 		const first = embedDiagramMetadata(svg, {
 			schemaVersion: 1,
 			editor: 'drawio',
-			payload: { value: 'old' },
+			project: {
+				format: 'drawio-mxfile',
+				data: '<mxfile>old</mxfile>',
+			},
 		});
 
 		const updated = embedDiagramMetadata(first, {
 			schemaVersion: 1,
 			editor: 'tldraw',
-			payload: { value: 'new' },
+			project: {
+				format: 'tldraw-snapshot',
+				data: '{"document":{}}',
+			},
 		});
 
 		expect(updated.match(/common-markdown-diagram-editor/g)).toHaveLength(1);
 		expect(extractDiagramMetadata(updated)).toEqual({
 			schemaVersion: 1,
 			editor: 'tldraw',
-			payload: { value: 'new' },
+			project: {
+				format: 'tldraw-snapshot',
+				data: '{"document":{}}',
+			},
 		});
+	});
+
+	test('ignores metadata without project data', () => {
+		const encoded = btoa(JSON.stringify({ schemaVersion: 1, editor: 'drawio' }));
+		const broken = `<svg><metadata data-common-markdown-diagram-editor="${encoded}"></metadata></svg>`;
+
+		expect(extractDiagramMetadata(broken)).toBeNull();
 	});
 
 	test('returns null when svg has no common markdown diagram metadata', () => {

@@ -14,6 +14,24 @@ describe('normalizeSvgPath', () => {
 		expect(normalizeSvgPath('Diagrams/my%20diagram.svg')).toBe('Diagrams/my diagram.svg');
 	});
 
+	test('converts app resource urls under the vault base path to vault-relative paths', () => {
+		expect(
+			normalizeSvgPath(
+				'app://local/mnt/c/Users/qiudeng/Desktop/test-vault/Diagrams/my%20diagram.svg?mtime=1',
+				'/mnt/c/Users/qiudeng/Desktop/test-vault',
+			),
+		).toBe('Diagrams/my diagram.svg');
+	});
+
+	test('converts windows absolute resource urls under the vault base path to vault-relative paths', () => {
+		expect(
+			normalizeSvgPath(
+				'app://local/C:/Users/qiudeng/Desktop/test-vault/Diagrams/example.svg',
+				'C:/Users/qiudeng/Desktop/test-vault',
+			),
+		).toBe('Diagrams/example.svg');
+	});
+
 	test('ignores non-svg paths', () => {
 		expect(normalizeSvgPath('Diagrams/example.png')).toBeNull();
 		expect(normalizeSvgPath('')).toBeNull();

@@ -1,7 +1,12 @@
 export interface DiagramMetadata {
 	schemaVersion: 1;
 	editor: string;
-	payload: unknown;
+	project: DiagramProject;
+}
+
+export interface DiagramProject {
+	format: string;
+	data: string;
 }
 
 const METADATA_ATTRIBUTE = 'data-common-markdown-diagram-editor';
@@ -54,8 +59,16 @@ function isDiagramMetadata(value: unknown): value is DiagramMetadata {
 	}
 
 	const metadata = value as Partial<DiagramMetadata>;
+	const project = metadata.project as Partial<DiagramProject> | undefined;
 
-	return metadata.schemaVersion === 1 && typeof metadata.editor === 'string';
+	return (
+		metadata.schemaVersion === 1 &&
+		typeof metadata.editor === 'string' &&
+		!!project &&
+		typeof project === 'object' &&
+		typeof project.format === 'string' &&
+		typeof project.data === 'string'
+	);
 }
 
 function encodeBase64Utf8(value: string): string {
