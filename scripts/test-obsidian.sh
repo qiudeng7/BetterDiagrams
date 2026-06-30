@@ -25,8 +25,9 @@ PLUGIN_ID="common-markdown-diagram-editor"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 
-# Development vault path. Accepts either WSL paths or Windows paths via --vault-path.
-VAULT_DIR="$ROOT_DIR/test-vault"
+# Development vault path. Defaults to the Windows desktop vault so Obsidian can access it.
+# Accepts either WSL paths or Windows paths via --vault-path.
+VAULT_DIR="/mnt/c/Users/qiudeng/Desktop/test-vault"
 
 # Vault name registered in Obsidian. Defaults to the vault folder name when not provided.
 VAULT_NAME=""
@@ -53,7 +54,7 @@ Modes:
 
 Options:
   --obsidian-path PATH  Path to Obsidian.exe. Accepts WSL or Windows paths.
-  --vault-path PATH     Development vault path. Defaults to ./test-vault.
+  --vault-path PATH     Development vault path. Defaults to the Windows desktop test vault.
   --vault-name NAME     Obsidian vault name. Defaults to the vault folder name.
   --skip-build          Copy existing build output without running pnpm build.
   --no-launch           Alias for --install-only.
