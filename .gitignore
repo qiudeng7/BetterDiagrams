@@ -1,0 +1,17 @@
+node_modules/
+test-vault/
+.opencode/
+
+dist/
+coverage/
+.vite/
+.vitest/
+*.tsbuildinfo
+
+.env
+.env.*
+*.log
+
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,9 @@
+.common-markdown-diagram-editor-modal {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.common-markdown-diagram-editor-modal code {
+	word-break: break-all;
+}

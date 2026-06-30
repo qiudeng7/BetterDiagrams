@@ -1,0 +1,29 @@
+{
+	"name": "common-markdown-diagram-editor",
+	"version": "0.1.0",
+	"description": "Edit SVG-backed diagrams from Markdown in Obsidian.",
+	"main": "dist/main.js",
+	"type": "module",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"test": "vitest run",
+		"obsidian:start": "bash scripts/test-obsidian.sh --start",
+		"obsidian:reload": "bash scripts/test-obsidian.sh --reload"
+	},
+	"keywords": [
+		"obsidian",
+		"diagram",
+		"svg",
+		"markdown"
+	],
+	"author": "qiudeng",
+	"license": "MIT",
+	"devDependencies": {
+		"@types/node": "^22.15.17",
+		"esbuild": "0.25.5",
+		"obsidian": "latest",
+		"typescript": "^5.8.3",
+		"vitest": "^3.2.4"
+	}
+}
