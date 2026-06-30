@@ -1,141 +1,141 @@
-# Development Workflow
+# 开发流程
 
-This project is developed from WSL and manually verified in Windows Obsidian.
+本项目在 WSL 中开发，并在 Windows 版 Obsidian 中进行人工验证。
 
-## Commands
+## 命令
 
-Before using the Obsidian automation commands, enable Obsidian CLI in Obsidian:
+使用 Obsidian 自动化命令前，需要先在 Obsidian 中启用 CLI：
 
 ```text
 Settings -> About -> Advanced -> Obsidian command line
 ```
 
-Without this setting, `obsidian:start` and `obsidian:reload` cannot reliably open vaults or reload plugins from the command line.
+如果没有启用该设置，`obsidian:start` 和 `obsidian:reload` 无法稳定地从命令行打开 Vault 或重新加载插件。
 
-Start the development vault in Obsidian:
+在 Obsidian 中启动开发 Vault：
 
 ```bash
 pnpm obsidian:start
 ```
 
-This command builds the plugin, copies `dist/` into the test vault plugin folder, ensures the plugin is enabled, and opens the vault with an Obsidian URI.
+该命令会构建插件，把 `dist/` 复制到测试 Vault 的插件目录，确保插件已启用，并通过 Obsidian URI 打开 Vault。
 
-Reload the plugin after code changes:
+代码变更后重新加载插件：
 
 ```bash
 pnpm obsidian:reload
 ```
 
-This command builds the plugin, copies `dist/` into the test vault plugin folder, ensures the plugin is enabled, and runs Obsidian CLI `plugin:reload`.
+该命令会构建插件，把 `dist/` 复制到测试 Vault 的插件目录，确保插件已启用，并执行 Obsidian CLI 的 `plugin:reload`。
 
-Run tests only:
+只运行测试：
 
 ```bash
 pnpm test
 ```
 
-Build only:
+只运行构建：
 
 ```bash
 pnpm build
 ```
 
-## Script Configuration
+## 脚本配置
 
-The package scripts call `scripts/test-obsidian.sh`.
+package scripts 会调用 `scripts/test-obsidian.sh`。
 
-Default configuration:
+默认配置：
 
 ```bash
 PLUGIN_ID="common-markdown-diagram-editor"
-VAULT_DIR="./test-vault"
+VAULT_DIR="/mnt/c/Users/qiudeng/Desktop/test-vault"
 VAULT_NAME="test-vault"
 OBSIDIAN_PATH="D:\APP\Obsidian\Obsidian.exe"
 ```
 
-The script accepts Windows paths and WSL paths.
+脚本同时接受 Windows 路径和 WSL 路径。
 
-Use a custom Obsidian executable:
+使用自定义 Obsidian 可执行文件：
 
 ```bash
 pnpm obsidian:start -- --obsidian-path "C:\path\to\Obsidian.exe"
 ```
 
-Use a custom vault path and registered vault name:
+使用自定义 Vault 路径和已注册的 Vault 名称：
 
 ```bash
 pnpm obsidian:start -- --vault-path "C:\path\to\vault" --vault-name "My Vault"
 ```
 
-Use an environment variable instead of a CLI flag:
+使用环境变量代替 CLI 参数：
 
 ```bash
 OBSIDIAN_PATH="/mnt/d/APP/Obsidian/Obsidian.exe" pnpm obsidian:start
 ```
 
-Install files without opening or reloading Obsidian:
+只安装文件，不打开或重新加载 Obsidian：
 
 ```bash
 bash scripts/test-obsidian.sh --install-only
 ```
 
-Copy existing `dist/` files without rebuilding:
+不重新构建，直接复制已有 `dist/` 文件：
 
 ```bash
 bash scripts/test-obsidian.sh --reload --skip-build
 ```
 
-## What The Script Does
+## 脚本行为
 
-Both `obsidian:start` and `obsidian:reload` perform these shared steps:
+`obsidian:start` 和 `obsidian:reload` 都会执行以下共享步骤：
 
-1. Run `pnpm build` unless `--skip-build` is provided.
-2. Verify `dist/main.js`, `dist/manifest.json`, and `dist/styles.css` exist.
-3. Create `test-vault/.obsidian/plugins/common-markdown-diagram-editor/` if needed.
-4. Copy the three `dist/` files into that plugin folder.
-5. Add `common-markdown-diagram-editor` to `test-vault/.obsidian/community-plugins.json`.
+1. 除非传入 `--skip-build`，否则运行 `pnpm build`。
+2. 检查 `dist/main.js`、`dist/manifest.json` 和 `dist/styles.css` 是否存在。
+3. 如果需要，创建 `test-vault/.obsidian/plugins/common-markdown-diagram-editor/`。
+4. 将三个 `dist/` 文件复制到该插件目录。
+5. 将 `common-markdown-diagram-editor` 写入 `test-vault/.obsidian/community-plugins.json`。
 
-Then the modes diverge:
+随后根据模式执行不同操作。
 
-`obsidian:start` opens the vault with:
+`obsidian:start` 使用以下 URI 打开 Vault：
 
 ```text
 obsidian://open?vault=test-vault
 ```
 
-`obsidian:reload` runs:
+`obsidian:reload` 执行：
 
 ```bash
 "/mnt/d/APP/Obsidian/Obsidian.exe" vault=test-vault plugin:reload id=common-markdown-diagram-editor
 ```
 
-## Vault Names
+## Vault 名称
 
-Obsidian CLI targets vaults by registered vault name, not by filesystem path.
+Obsidian CLI 按已注册的 Vault 名称定位 Vault，而不是按文件系统路径定位。
 
-List registered vaults:
+列出已注册的 Vault：
 
 ```bash
 "/mnt/d/APP/Obsidian/Obsidian.exe" vaults verbose
 ```
 
-If the script installs into one path but Obsidian opens or reloads another vault, pass the correct `--vault-name`.
+如果脚本安装到一个路径，但 Obsidian 打开或重载了另一个 Vault，请传入正确的 `--vault-name`。
 
-## Troubleshooting
+## 故障排查
 
-If `obsidian:reload` does nothing, first run `pnpm obsidian:start` and wait for Obsidian to finish loading the vault.
+如果 `obsidian:reload` 没有反应，请先运行 `pnpm obsidian:start`，并等待 Obsidian 完成 Vault 加载。
 
-If Obsidian cannot find the executable, pass `--obsidian-path` or set `OBSIDIAN_PATH`.
+如果找不到 Obsidian 可执行文件，请传入 `--obsidian-path` 或设置 `OBSIDIAN_PATH`。
 
-If Obsidian reports the installer is out of date, update the installer from `https://obsidian.md/download`. The current CLI still works, but newer installers include better CLI support.
+如果 Obsidian 提示安装器过旧，请从 `https://obsidian.md/download` 更新安装器。当前 CLI 仍可使用，但新版安装器包含更好的 CLI 支持。
 
-If the plugin does not appear enabled, inspect:
+如果插件没有显示为已启用，请检查：
 
 ```text
 test-vault/.obsidian/community-plugins.json
 ```
 
-It should include:
+其中应包含：
 
 ```json
 ["common-markdown-diagram-editor"]

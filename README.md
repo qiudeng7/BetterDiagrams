@@ -2,7 +2,9 @@
 
 An Obsidian plugin prototype for editing SVG-backed diagrams from Markdown.
 
-## Package Scripts
+Languages: English | [简体中文](README.zh-CN.md)
+
+## Quick Start
 
 Install dependencies:
 
@@ -10,23 +12,23 @@ Install dependencies:
 pnpm install
 ```
 
-Run unit tests:
+Create a test Obsidian vault anywhere, then export `VAULT_DIR` to its path.
 
 ```bash
-pnpm test
+export VAULT_DIR="/mnt/c/Users/qiudeng/Desktop/test-vault"
 ```
 
-Build once:
+The vault must already be registered in Obsidian because the development script opens it by vault name.
+
+If you develop from WSL on Windows, set `OBSIDIAN_PATH` to your local Obsidian executable.
 
 ```bash
-pnpm build
+export OBSIDIAN_PATH="/mnt/d/APP/Obsidian/Obsidian.exe"
 ```
 
-Watch and rebuild during plugin development:
+Enable the Obsidian CLI at `Obsidian Settings -> About -> Advanced`.
 
-```bash
-pnpm dev
-```
+After that, use the package scripts below. See `scripts/test-obsidian.sh` comments for implementation details.
 
 Install the built plugin into the local development vault and launch Obsidian:
 
@@ -47,4 +49,4 @@ pnpm obsidian:start -- --vault-name "My Vault"
 pnpm obsidian:reload -- --skip-build
 ```
 
-See `docs/development.md` for the full WSL + Windows Obsidian workflow and required Obsidian CLI setting.
+See [开发流程](docs/development.md) for the full WSL + Windows Obsidian workflow.
