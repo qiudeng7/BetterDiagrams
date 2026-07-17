@@ -12,9 +12,8 @@
 # Obsidian CLI must be enabled in Obsidian first:
 # Settings -> About -> Advanced -> Obsidian command line.
 #
-# Paths may be passed as WSL paths or Windows paths. The default executable path
-# matches the local Windows installation used by this project:
-# D:\APP\Obsidian\Obsidian.exe.
+# Paths may be passed as macOS, WSL, or Windows paths. Obsidian is resolved from
+# an explicit path, the macOS `obsidian` command, or system-specific candidates.
 
 set -euo pipefail
 
@@ -25,9 +24,9 @@ PLUGIN_ID="common-markdown-diagram-editor"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd -- "$SCRIPT_DIR/.." && pwd)"
 
-# Development vault path. Defaults to the Windows desktop vault so Obsidian can access it.
-# Accepts either WSL paths or Windows paths via --vault-path.
-VAULT_DIR="/mnt/c/Users/qiudeng/Desktop/test-vault"
+# Development vault path. `--vault-path` and VAULT_DIR take precedence over
+# existing fallback candidates. If none exist, the repository test vault is used.
+VAULT_DIR="${VAULT_DIR:-}"
 
 # Vault name registered in Obsidian. Defaults to the vault folder name when not provided.
 VAULT_NAME=""
@@ -53,8 +52,8 @@ Modes:
   --install-only       Install the plugin without launching or reloading Obsidian.
 
 Options:
-  --obsidian-path PATH  Path to Obsidian.exe. Accepts WSL or Windows paths.
-  --vault-path PATH     Development vault path. Defaults to the Windows desktop test vault.
+  --obsidian-path PATH  Path to Obsidian. Accepts macOS, WSL, or Windows paths.
+  --vault-path PATH     Development vault path. Defaults to an existing test-vault fallback.
   --vault-name NAME     Obsidian vault name. Defaults to the vault folder name.
   --skip-build          Copy existing build output without running pnpm build.
   --no-launch           Alias for --install-only.
@@ -62,6 +61,7 @@ Options:
 
 Environment:
   OBSIDIAN_PATH         Alternative to --obsidian-path.
+  VAULT_DIR             Alternative to --vault-path.
 
 Examples:
   scripts/test-obsidian.sh --start
@@ -141,6 +141,30 @@ resolve_obsidian_path() {
 		return
 	fi
 
+	local system_name
+	system_name="$(uname -s)"
+
+	if [[ "$system_name" == "Darwin" ]]; then
+		if command -v obsidian >/dev/null 2>&1; then
+			command -v obsidian
+			return
+		fi
+
+		local macos_candidates=(
+			"/Applications/Obsidian.app/Contents/MacOS/Obsidian"
+			"$HOME/Applications/Obsidian.app/Contents/MacOS/Obsidian"
+		)
+
+		for candidate in "${macos_candidates[@]}"; do
+			if [[ -x "$candidate" ]]; then
+				printf '%s\n' "$candidate"
+				return
+			fi
+		done
+
+		return 1
+	fi
+
 	local windows_user="${WINDOWS_USER:-${USER:-}}"
 	local candidates=()
 
@@ -155,13 +179,35 @@ resolve_obsidian_path() {
 	)
 
 	for candidate in "${candidates[@]}"; do
-		if [[ -f "$candidate" ]]; then
+		if [[ -x "$candidate" ]]; then
 			printf '%s\n' "$candidate"
 			return
 		fi
 	done
 
 	return 1
+}
+
+resolve_vault_dir() {
+	if [[ -n "$VAULT_DIR" ]]; then
+		to_wsl_path "$VAULT_DIR"
+		return
+	fi
+
+	local candidates=(
+		"$ROOT_DIR/test-vault"
+		"/Users/qiudeng/workspace/common-markdown-diagram-editor/test-vault"
+		"/mnt/c/Users/qiudeng/Desktop/test-vault"
+	)
+
+	for candidate in "${candidates[@]}"; do
+		if [[ -d "$candidate" ]]; then
+			printf '%s\n' "$candidate"
+			return
+		fi
+	done
+
+	printf '%s\n' "$ROOT_DIR/test-vault"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -211,7 +257,7 @@ while [[ $# -gt 0 ]]; do
 	esac
 done
 
-VAULT_DIR="$(to_wsl_path "$VAULT_DIR")"
+VAULT_DIR="$(resolve_vault_dir)"
 if [[ -z "$VAULT_NAME" ]]; then
 	VAULT_NAME="$(basename "$VAULT_DIR")"
 fi
@@ -241,8 +287,12 @@ fi
 
 OBSIDIAN_EXE="$(resolve_obsidian_path || true)"
 
-if [[ -z "$OBSIDIAN_EXE" || ! -f "$OBSIDIAN_EXE" ]]; then
-	fail 'Could not find Obsidian.exe. Pass --obsidian-path or set OBSIDIAN_PATH.'
+if [[ -z "$OBSIDIAN_EXE" ]]; then
+	fail 'Could not find Obsidian. Pass --obsidian-path or set OBSIDIAN_PATH.'
+fi
+
+if [[ ! -x "$OBSIDIAN_EXE" ]]; then
+	fail "Obsidian is not executable: $OBSIDIAN_EXE"
 fi
 
 VAULT_URI="obsidian://open?vault=$(url_encode "$VAULT_NAME")"

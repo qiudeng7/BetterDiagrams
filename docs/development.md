@@ -1,6 +1,6 @@
 # 开发流程
 
-本项目在 WSL 中开发，并在 Windows 版 Obsidian 中进行人工验证。
+本项目可在 macOS 或 WSL 中开发，并在对应系统的 Obsidian 桌面端进行人工验证。
 
 ## 命令
 
@@ -48,12 +48,14 @@ package scripts 会调用 `scripts/test-obsidian.sh`。
 
 ```bash
 PLUGIN_ID="common-markdown-diagram-editor"
-VAULT_DIR="/mnt/c/Users/qiudeng/Desktop/test-vault"
+VAULT_DIR=""
 VAULT_NAME="test-vault"
-OBSIDIAN_PATH="D:\APP\Obsidian\Obsidian.exe"
+OBSIDIAN_PATH=""
 ```
 
-脚本同时接受 Windows 路径和 WSL 路径。
+Vault 按以下顺序解析：`--vault-path`、`VAULT_DIR`、仓库内的 `test-vault`、旧的 Windows 桌面测试 Vault；若候选路径都不存在，则使用并创建仓库内的 `test-vault`。
+
+Obsidian 按以下顺序解析：`--obsidian-path`、`OBSIDIAN_PATH`；在 macOS 上继续查找 PATH 中的 `obsidian` 命令及标准 App 路径（不使用 `.exe`），在其他系统上继续查找 Windows 的 `.exe` 候选路径。
 
 使用自定义 Obsidian 可执行文件：
 
@@ -70,7 +72,7 @@ pnpm obsidian:start -- --vault-path "C:\path\to\vault" --vault-name "My Vault"
 使用环境变量代替 CLI 参数：
 
 ```bash
-OBSIDIAN_PATH="/mnt/d/APP/Obsidian/Obsidian.exe" pnpm obsidian:start
+VAULT_DIR="/path/to/vault" OBSIDIAN_PATH="/Applications/Obsidian.app/Contents/MacOS/Obsidian" pnpm obsidian:start
 ```
 
 只安装文件，不打开或重新加载 Obsidian：
@@ -106,7 +108,7 @@ obsidian://open?vault=test-vault
 `obsidian:reload` 执行：
 
 ```bash
-"/mnt/d/APP/Obsidian/Obsidian.exe" vault=test-vault plugin:reload id=common-markdown-diagram-editor
+obsidian vault=test-vault plugin:reload id=common-markdown-diagram-editor
 ```
 
 ## Vault 名称
@@ -116,7 +118,7 @@ Obsidian CLI 按已注册的 Vault 名称定位 Vault，而不是按文件系统
 列出已注册的 Vault：
 
 ```bash
-"/mnt/d/APP/Obsidian/Obsidian.exe" vaults verbose
+obsidian vaults verbose
 ```
 
 如果脚本安装到一个路径，但 Obsidian 打开或重载了另一个 Vault，请传入正确的 `--vault-name`。

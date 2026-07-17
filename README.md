@@ -12,15 +12,15 @@ Install dependencies:
 pnpm install
 ```
 
-Create a test Obsidian vault anywhere, then export `VAULT_DIR` to its path.
+The development script uses this repository's `test-vault` by default. Override it with `VAULT_DIR` when needed.
 
 ```bash
-export VAULT_DIR="/mnt/c/Users/qiudeng/Desktop/test-vault"
+export VAULT_DIR="/path/to/test-vault"
 ```
 
 The vault must already be registered in Obsidian because the development script opens it by vault name.
 
-If you develop from WSL on Windows, set `OBSIDIAN_PATH` to your local Obsidian executable.
+On macOS, the script uses the `obsidian` command on `PATH` or the standard application path. On WSL, set `OBSIDIAN_PATH` if no Windows candidate is found.
 
 ```bash
 export OBSIDIAN_PATH="/mnt/d/APP/Obsidian/Obsidian.exe"

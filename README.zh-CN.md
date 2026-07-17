@@ -12,15 +12,15 @@
 pnpm install
 ```
 
-在任意位置创建一个测试 Obsidian vault，然后将 `VAULT_DIR` 导出为该 vault 路径。
+开发脚本默认使用仓库内的 `test-vault`；需要时可通过 `VAULT_DIR` 覆盖。
 
 ```bash
-export VAULT_DIR="/mnt/c/Users/qiudeng/Desktop/test-vault"
+export VAULT_DIR="/path/to/test-vault"
 ```
 
 该 vault 必须已经在 Obsidian 中注册，因为开发脚本会通过 vault 名称打开它。
 
-如果你在 Windows 上使用 WSL 开发，请将 `OBSIDIAN_PATH` 设置为本地 Obsidian 可执行文件路径。
+在 macOS 上，脚本会使用 PATH 中的 `obsidian` 命令或标准应用路径；在 WSL 上，如果未找到 Windows 候选路径，请设置 `OBSIDIAN_PATH`。
 
 ```bash
 export OBSIDIAN_PATH="/mnt/d/APP/Obsidian/Obsidian.exe"
