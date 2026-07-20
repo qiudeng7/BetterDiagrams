@@ -1,73 +1,54 @@
-interface MarkdownSubViewLike {
-	getScroll?: () => number;
-	applyScroll?: (scroll: number) => void;
-}
+import type { MarkdownView, WorkspaceLeaf } from 'obsidian';
+import type { DiagramRefreshStrategy } from '../settings';
 
-interface MarkdownPreviewLike {
-	rerender?: (full?: boolean) => void;
-}
-
-interface EditorLike {
-	getScrollInfo?: () => { left: number; top: number };
-	scrollTo?: (x?: number | null, y?: number | null) => void;
-}
-
-export interface MarkdownViewLike {
-	currentMode?: MarkdownSubViewLike;
-	previewMode?: MarkdownPreviewLike;
-	editor?: EditorLike;
-	getViewData?: () => string;
-	setViewData?: (data: string, clear: boolean) => void;
-}
-
-export interface MarkdownScrollSnapshot {
-	modeScroll?: number;
-	editorScroll?: { left: number; top: number };
-}
-
-export function captureMarkdownScroll(view: MarkdownViewLike | null): MarkdownScrollSnapshot | null {
-	if (!view) {
-		return null;
-	}
-
-	const snapshot: MarkdownScrollSnapshot = {};
-
-	if (typeof view.currentMode?.getScroll === 'function') {
-		snapshot.modeScroll = view.currentMode.getScroll();
-	}
-
-	if (typeof view.editor?.getScrollInfo === 'function') {
-		snapshot.editorScroll = view.editor.getScrollInfo();
-	}
-
-	return snapshot.modeScroll === undefined && !snapshot.editorScroll ? null : snapshot;
+interface RebuildableWorkspaceLeaf extends WorkspaceLeaf {
+	rebuildView?: () => Promise<void>;
 }
 
 export async function refreshMarkdownView(
-	view: MarkdownViewLike | null,
-	snapshot: MarkdownScrollSnapshot | null,
+	view: MarkdownView | null,
+	strategy: DiagramRefreshStrategy,
 	waitForLayout = waitForAnimationFrame,
 ): Promise<void> {
 	if (!view) {
 		return;
 	}
 
-	if (typeof view.previewMode?.rerender === 'function') {
-		view.previewMode.rerender(true);
-	} else if (typeof view.getViewData === 'function' && typeof view.setViewData === 'function') {
-		view.setViewData(view.getViewData(), false);
+	const scroll = view.editor.getScrollInfo();
+
+	if (strategy === 'safe-only') {
+		await reopenFileInLeaf(view);
+	} else if (strategy === 'private-only') {
+		await rebuildLeafView(view.leaf);
+	} else {
+		try {
+			await rebuildLeafView(view.leaf);
+		} catch {
+			await reopenFileInLeaf(view);
+		}
 	}
 
 	await waitForLayout();
 	await waitForLayout();
+	(view.leaf.view as MarkdownView).editor.scrollTo(scroll.left, scroll.top);
+}
 
-	if (snapshot?.modeScroll !== undefined && typeof view.currentMode?.applyScroll === 'function') {
-		view.currentMode.applyScroll(snapshot.modeScroll);
+async function rebuildLeafView(leaf: WorkspaceLeaf): Promise<void> {
+	const rebuildableLeaf = leaf as RebuildableWorkspaceLeaf;
+
+	if (typeof rebuildableLeaf.rebuildView !== 'function') {
+		throw new Error('WorkspaceLeaf.rebuildView is unavailable.');
 	}
 
-	if (snapshot?.editorScroll && typeof view.editor?.scrollTo === 'function') {
-		view.editor.scrollTo(snapshot.editorScroll.left, snapshot.editorScroll.top);
+	await rebuildableLeaf.rebuildView();
+}
+
+async function reopenFileInLeaf(view: MarkdownView): Promise<void> {
+	if (!view.file) {
+		throw new Error('The Markdown tab has no file to reopen.');
 	}
+
+	await view.leaf.openFile(view.file, { eState: view.leaf.getEphemeralState() });
 }
 
 function waitForAnimationFrame(): Promise<void> {

@@ -1,41 +1,55 @@
 import { describe, expect, test, vi } from 'vitest';
-import { captureMarkdownScroll, refreshMarkdownView } from '../src/obsidian/markdownRefresh';
+import { refreshMarkdownView } from '../src/obsidian/markdownRefresh';
 
-describe('markdown refresh helpers', () => {
-	test('captures preview scroll and restores it after rerender', async () => {
-		const applyScroll = vi.fn();
-		const rerender = vi.fn();
-		const view = {
-			currentMode: {
-				getScroll: () => 420,
-				applyScroll,
-			},
-			previewMode: {
-				rerender,
-			},
-		};
+function createView(options: { rebuildView?: () => Promise<void>; openFile?: () => Promise<void> } = {}) {
+	const scrollTo = vi.fn();
+	const leaf = {
+		view: { editor: { scrollTo } },
+		rebuildView: options.rebuildView,
+		openFile: options.openFile ?? vi.fn(async () => undefined),
+		getEphemeralState: () => ({ focus: true }),
+	};
+	const view = {
+		file: { path: 'note.md' },
+		leaf,
+		editor: { getScrollInfo: () => ({ left: 8, top: 420 }) },
+	};
 
-		const snapshot = captureMarkdownScroll(view);
+	return { leaf, scrollTo, view };
+}
 
-		await refreshMarkdownView(view, snapshot, async () => undefined);
+describe('markdown tab refresh', () => {
+	test('uses the private rebuild API by default', async () => {
+		const rebuildView = vi.fn(async () => undefined);
+		const { leaf, scrollTo, view } = createView({ rebuildView });
 
-		expect(rerender).toHaveBeenCalledWith(true);
-		expect(applyScroll).toHaveBeenCalledWith(420);
+		await refreshMarkdownView(view as never, 'private-first', async () => undefined);
+
+		expect(rebuildView).toHaveBeenCalledOnce();
+		expect(leaf.openFile).not.toHaveBeenCalled();
+		expect(scrollTo).toHaveBeenCalledWith(8, 420);
 	});
 
-	test('falls back to resetting view data when preview rerender is unavailable', async () => {
-		const setViewData = vi.fn();
-		const view = {
-			currentMode: {
-				getScroll: () => 12,
-				applyScroll: vi.fn(),
-			},
-			getViewData: () => 'markdown',
-			setViewData,
-		};
+	test('falls back to reopening the file when the private API fails', async () => {
+		const rebuildView = vi.fn(async () => { throw new Error('unavailable'); });
+		const openFile = vi.fn(async () => undefined);
+		const { scrollTo, view } = createView({ rebuildView, openFile });
 
-		await refreshMarkdownView(view, captureMarkdownScroll(view), async () => undefined);
+		await refreshMarkdownView(view as never, 'private-first', async () => undefined);
 
-		expect(setViewData).toHaveBeenCalledWith('markdown', false);
+		expect(openFile).toHaveBeenCalledWith(view.file, { eState: { focus: true } });
+		expect(scrollTo).toHaveBeenCalledWith(8, 420);
+	});
+
+	test('uses only the selected refresh mechanism', async () => {
+		const rebuildView = vi.fn(async () => { throw new Error('unavailable'); });
+		const openFile = vi.fn(async () => undefined);
+		const { view } = createView({ rebuildView, openFile });
+
+		await expect(refreshMarkdownView(view as never, 'private-only', async () => undefined)).rejects.toThrow('unavailable');
+		expect(openFile).not.toHaveBeenCalled();
+
+		await refreshMarkdownView(view as never, 'safe-only', async () => undefined);
+		expect(openFile).toHaveBeenCalledOnce();
 	});
 });

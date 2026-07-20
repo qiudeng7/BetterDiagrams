@@ -1,4 +1,11 @@
-import { MarkdownView, Notice, Plugin, TFile, type Editor, type MarkdownFileInfo } from 'obsidian';
+import {
+	MarkdownView,
+	Notice,
+	Plugin,
+	TFile,
+	type Editor,
+	type MarkdownFileInfo,
+} from 'obsidian';
 import {
 	createDrawioDiagramFilename,
 	createInitialDrawioSvg,
@@ -6,23 +13,35 @@ import {
 } from './drawio/diagram';
 import { DrawioDiagramOverlay } from './drawio/overlay';
 import { getVaultBasePath, resolveSvgFile } from './obsidian/svgFile';
+import {
+	BetterDiagramSettingTab,
+	DEFAULT_SETTINGS,
+	type BetterDiagramSettings,
+} from './settings';
 import { normalizeSvgPath } from './svg/path';
 
 export default class BetterDiagramPlugin extends Plugin {
+	settings: BetterDiagramSettings = DEFAULT_SETTINGS;
+
 	async onload(): Promise<void> {
+		await this.loadSettings();
+		this.addSettingTab(new BetterDiagramSettingTab(this.app, this));
+
 		this.addCommand({
 			id: 'insert-new-drawio-diagram',
 			name: 'Insert a new Drawio diagram',
 			editorCallback: (editor, ctx) => void this.insertNewDrawioDiagram(editor, ctx),
 		});
 
-		this.addCommand({
-			id: 'open-diagram-editor-help',
-			name: 'Open diagram editor help',
-			callback: () => new Notice('Double-click an SVG image in Reading view to open the diagram editor.'),
-		});
-
 		this.registerDomEvent(document, 'dblclick', (event: MouseEvent) => this.openDiagramFromImage(event));
+	}
+
+	async saveSettings(): Promise<void> {
+		await this.saveData(this.settings);
+	}
+
+	private async loadSettings(): Promise<void> {
+		this.settings = { ...DEFAULT_SETTINGS, ...(await this.loadData()) };
 	}
 
 	private openDiagramFromImage(event: MouseEvent): void {
@@ -54,6 +73,7 @@ export default class BetterDiagramPlugin extends Plugin {
 			this.app,
 			file,
 			this.app.workspace.getActiveViewOfType(MarkdownView),
+			this.settings.refreshStrategy,
 		).open();
 	}
 
@@ -75,7 +95,12 @@ export default class BetterDiagramPlugin extends Plugin {
 
 			editor.replaceSelection(createMarkdownImageEmbed(markdownLink));
 			new Notice(`Inserted ${diagramFile.name}.`);
-			void new DrawioDiagramOverlay(this.app, diagramFile, getMarkdownView(ctx, this)).open();
+			void new DrawioDiagramOverlay(
+				this.app,
+				diagramFile,
+				getMarkdownView(ctx, this),
+				this.settings.refreshStrategy,
+			).open();
 		} catch (error) {
 			new Notice(`Failed to insert draw.io diagram: ${formatError(error)}`);
 		}

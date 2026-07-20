@@ -42,6 +42,12 @@ describe('Obsidian development scripts', () => {
 		expect(script).not.toContain("spawnSync('obsidian'");
 	});
 
+	test('installs the latest build before reloading the plugin', () => {
+		const script = readFileSync(new URL('../scripts/obsidian/reload-plugin.mjs', import.meta.url), 'utf8');
+
+		expect(script).toContain('await buildAndInstallPlugin()');
+	});
+
 	test('opens the registered test vault by URI', () => {
 		const script = readFileSync(new URL('../scripts/obsidian/open-vault.mjs', import.meta.url), 'utf8');
 

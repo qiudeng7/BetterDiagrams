@@ -60,6 +60,13 @@ export function run(command, args, options = {}) {
 	}
 }
 
+export async function buildAndInstallPlugin() {
+	info('Building plugin...');
+	run('pnpm', ['build'], { cwd: rootDir });
+	await installPluginFiles();
+	info(`Installed ${pluginId} into ${pluginDir}`);
+}
+
 export async function installPluginFiles() {
 	for (const file of ['manifest.json', 'main.js', 'styles.css']) {
 		await access(join(distDir, file));

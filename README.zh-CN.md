@@ -28,10 +28,9 @@ pnpm obsidian:plugin:install
 pnpm obsidian:vault:open
 ```
 
-代码修改后，重新注入并重载已打开 Vault 中的插件：
+代码修改后，重新构建、注入并重载已打开 Vault 中的插件：
 
 ```bash
-pnpm obsidian:plugin:install
 pnpm obsidian:plugin:reload
 ```
 

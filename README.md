@@ -28,10 +28,9 @@ pnpm obsidian:plugin:install
 pnpm obsidian:vault:open
 ```
 
-After changing code, install and reload the plugin in the already-open vault:
+After changing code, rebuild, install, and reload the plugin in the already-open vault:
 
 ```bash
-pnpm obsidian:plugin:install
 pnpm obsidian:plugin:reload
 ```
 

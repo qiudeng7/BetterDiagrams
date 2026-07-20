@@ -1,14 +1,13 @@
 import { App, TFile } from 'obsidian';
 
-export function resolveSvgFile(app: App, svgPath: string): TFile | null {
+export function resolveSvgFile(app: App, svgPath: string, sourcePath = ''): TFile | null {
 	const directFile = app.vault.getAbstractFileByPath(svgPath);
 
 	if (directFile instanceof TFile) {
 		return directFile;
 	}
 
-	const activeFile = app.workspace.getActiveFile();
-	const linkedFile = app.metadataCache.getFirstLinkpathDest(svgPath, activeFile?.path ?? '');
+	const linkedFile = app.metadataCache.getFirstLinkpathDest(svgPath, sourcePath);
 
 	return linkedFile instanceof TFile ? linkedFile : null;
 }

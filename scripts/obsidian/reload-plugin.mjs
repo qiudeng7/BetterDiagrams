@@ -1,4 +1,5 @@
 import {
+	buildAndInstallPlugin,
 	ensureVaultExists,
 	info,
 	isVaultRegistered,
@@ -15,5 +16,6 @@ if (!(await isVaultRegistered())) {
 	process.exit(1);
 }
 
+await buildAndInstallPlugin();
 info(`Reloading ${pluginId} in ${vaultName}`);
 run('obsidian', [`vault=${vaultName}`, 'plugin:reload', `id=${pluginId}`]);

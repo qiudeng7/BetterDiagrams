@@ -52,10 +52,9 @@ pnpm obsidian:vault:open
 pnpm obsidian:plugin:reload
 ```
 
-该命令只重载已打开的 `test-vault` 中的 `better-diagram`，不会构建或复制插件。代码改动后的常用流程是：
+该命令会先构建插件并注入 `test-vault`，再重载已打开 Vault 中的 `better-diagram`。代码改动后的常用流程是：
 
 ```bash
-pnpm obsidian:plugin:install
 pnpm obsidian:plugin:reload
 ```
 

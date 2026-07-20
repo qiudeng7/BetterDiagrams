@@ -1,9 +1,8 @@
 import { App, MarkdownView, Notice, TFile } from 'obsidian';
 import {
-	captureMarkdownScroll,
 	refreshMarkdownView,
-	type MarkdownScrollSnapshot,
 } from '../obsidian/markdownRefresh';
+import type { DiagramRefreshStrategy } from '../settings';
 import { embedDiagramMetadata, extractDiagramMetadata } from '../svg/metadata';
 import {
 	DRAWIO_EMBED_ORIGIN,
@@ -30,9 +29,6 @@ export class DrawioDiagramOverlay {
 	private pendingSave: PendingSave | null = null;
 	private dirty = false;
 	private closed = false;
-	private savedSinceOpen = false;
-	private refreshStarted = false;
-	private readonly sourceScroll: MarkdownScrollSnapshot | null;
 
 	private readonly handleMessage = (event: MessageEvent<unknown>): void => {
 		void this.onMessage(event);
@@ -52,9 +48,8 @@ export class DrawioDiagramOverlay {
 		private readonly app: App,
 		private readonly file: TFile,
 		private readonly sourceView: MarkdownView | null,
-	) {
-		this.sourceScroll = captureMarkdownScroll(sourceView);
-	}
+		private readonly refreshStrategy: DiagramRefreshStrategy,
+	) {}
 
 	async open(): Promise<void> {
 		try {
@@ -232,8 +227,13 @@ export class DrawioDiagramOverlay {
 			await this.app.vault.modify(this.file, updatedSvg);
 			this.pendingSave = null;
 			this.dirty = false;
-			this.savedSinceOpen = true;
 			this.setStatus('Saved');
+
+			try {
+				await refreshMarkdownView(this.sourceView, this.refreshStrategy);
+			} catch (error) {
+				new Notice(`Diagram saved, but the Markdown tab could not be refreshed: ${formatError(error)}`);
+			}
 
 			if (!pendingSave.silent) {
 				new Notice('Diagram saved.');
@@ -275,10 +275,6 @@ export class DrawioDiagramOverlay {
 		this.iframeEl = null;
 		this.statusEl = null;
 
-		if (this.savedSinceOpen && !this.refreshStarted) {
-			this.refreshStarted = true;
-			void refreshMarkdownView(this.sourceView, this.sourceScroll);
-		}
 	}
 
 	private setStatus(status: string): void {
