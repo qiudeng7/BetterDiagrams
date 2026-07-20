@@ -1,41 +1,38 @@
 # BetterDiagram
 
-BetterDiagram 是一个 Obsidian 插件原型，用于从 Markdown 编辑基于 SVG 的图表。
-
-使用 `Insert a new Drawio diagram` 或 `Insert a new tldraw diagram` 命令创建图表；双击渲染后的
-SVG 即可重新打开对应编辑器。可编辑的项目数据始终嵌入在 SVG 中；两个编辑器的 UI 资源均从其官方在线服务加载。
-
-> **破坏性改名：** 插件 ID 已改为 `better-diagram`。安装此版本前请删除旧插件目录；携带旧元数据属性的 SVG 文件不再受 BetterDiagram 支持。
+BetterDiagram 让你直接在 Obsidian Markdown 中创建和编辑基于 SVG 的 draw.io 与 tldraw 图表。可编辑的项目数据会嵌入 SVG，因此图表可以随笔记一起携带。
 
 语言：[English](README.md) | 简体中文
 
-## 快速开始
+## 安装
 
-安装依赖：
+BetterDiagram 暂未上架 Obsidian 社区插件市场。可以从 GitHub Release 手动安装，或通过 BRAT 安装。
 
-```bash
-pnpm install
-```
+### 从 GitHub Release 安装
 
+1. 打开[最新 Release](https://github.com/qiudeng7/BetterDiagrams/releases/latest)。
+2. 在 **Assets** 中下载 `main.js`、`manifest.json` 和 `styles.css`。
+3. 在 Vault 中创建 `.obsidian/plugins/better-diagram/` 目录。
+4. 将下载的三个文件放入该目录。
+5. 重启 Obsidian，然后在 **设置 → 第三方插件** 中启用 **BetterDiagram**。
 
-开发命令固定使用仓库内的 `test-vault`。请先在 `Settings -> About -> Advanced -> Obsidian command line` 中手动启用 Obsidian CLI，然后检查 CLI 是否可用：
+### 通过 BRAT 安装
 
-```bash
-pnpm obsidian:check
-```
+1. 从社区插件市场安装 [BRAT](https://github.com/TfTHacker/obsidian42-brat)。
+2. 从命令面板运行 **BRAT: Add a beta plugin for testing**。
+3. 输入仓库地址：`qiudeng7/BetterDiagrams`。
+4. 确认安装，然后在 **设置 → 第三方插件** 中启用 **BetterDiagram**。
 
-创建开发 Vault。仅首次需要在 Obsidian 的 Vault 管理器中使用 **Open folder as vault** 注册该目录；之后注入构建后的插件并打开它：
+BRAT 会检查仓库的 GitHub Release 更新；需要时可运行 **BRAT: Check for updates to all beta plugins** 手动更新。
 
-```bash
-pnpm obsidian:vault:create
-pnpm obsidian:plugin:install
-pnpm obsidian:vault:open
-```
+## 使用
 
-代码修改后，重新构建、注入并重载已打开 Vault 中的插件：
+1. 在 Markdown 笔记中运行 **Insert a new Drawio diagram** 或 **Insert a new tldraw diagram**。
+2. 编辑图表并保存。
+3. 随时双击渲染后的 SVG，即可在其原始编辑器中重新打开。
 
-```bash
-pnpm obsidian:plugin:reload
-```
+draw.io 和 tldraw 的编辑器界面从各自官方在线服务加载，因此编辑时需要网络连接；生成的 SVG 和其中嵌入的编辑器数据会保存在本地 Vault 中。
 
-所有命令见 [开发流程](docs/development.md)。
+## 开发者
+
+开发命令和本地测试 Vault 流程见[开发流程](docs/development.md)。

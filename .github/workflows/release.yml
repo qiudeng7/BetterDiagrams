@@ -1,0 +1,56 @@
+name: 发布插件
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 配置 pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.13.0
+
+      - name: 配置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 验证版本标签
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          manifest_version=$(node -p "JSON.parse(require('node:fs').readFileSync('manifest.json', 'utf8')).version")
+          if [ "$RELEASE_TAG" != "$manifest_version" ]; then
+            echo "Release tag $RELEASE_TAG must match manifest version $manifest_version." >&2
+            exit 1
+          fi
+
+      - name: 运行测试
+        run: pnpm test
+
+      - name: 构建插件
+        run: pnpm build
+
+      - name: 创建 GitHub Release
+        uses: softprops/action-gh-release@v2.6.2
+        with:
+          generate_release_notes: true
+          files: |
+            dist/main.js
+            dist/manifest.json
+            dist/styles.css

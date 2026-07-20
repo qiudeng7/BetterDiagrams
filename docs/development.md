@@ -65,3 +65,14 @@ pnpm obsidian:plugin:reload
 pnpm test
 pnpm build
 ```
+
+## 发布
+
+提交准备发布的版本后，创建并推送一个与 `manifest.json` 中 `version` 完全相同、且不带 `v` 前缀的 Git 标签。例如当前版本为 `0.1.0` 时：
+
+```bash
+git tag 0.1.0
+git push origin 0.1.0
+```
+
+GitHub Actions 会安装锁定依赖、运行测试、构建插件，并创建同名 GitHub Release。Release 会附带供 Obsidian 和 BRAT 使用的 `main.js`、`manifest.json`、`styles.css`。
