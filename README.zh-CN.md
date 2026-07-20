@@ -1,6 +1,6 @@
 # BetterDiagram
 
-在 Obsidian 内双击 SVG 图片，即可打开内置的 draw.io 或 tldraw 编辑器来编辑图片。使用 insert 命令创建 draw.io 或 tldraw 图表，然后直接双击图片开始编辑。工程信息会保存在 SVG 的 metadata 中，导出的 SVG 内容保留在 SVG 本体中，用于在 Markdown 内显示。
+在 Obsidian 的 Markdown 编辑器内直接双击 SVG 图片，即可打开内置的 draw.io 或 tldraw 编辑器来编辑图片。使用 insert 命令创建 draw.io 或 tldraw 图表，然后直接双击图片开始编辑。工程信息会保存在 SVG 的 metadata 中，导出的 SVG 内容保留在 SVG 本体中，用于在 Markdown 内显示。
 
 语言：[English](README.md) | 简体中文
 

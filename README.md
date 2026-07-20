@@ -1,6 +1,6 @@
 # BetterDiagram
 
-Double-click an SVG image in Obsidian to edit it with the built-in draw.io or tldraw editor. Use an insert command to create a draw.io or tldraw diagram, then double-click the image to start editing. Project data is stored in the SVG metadata, while the exported SVG content remains in the SVG itself for display in Markdown.
+Double-click an SVG image directly in Obsidian's Markdown editor to edit it with the built-in draw.io or tldraw editor. Use an insert command to create a draw.io or tldraw diagram, then double-click the image to start editing. Project data is stored in the SVG metadata, while the exported SVG content remains in the SVG itself for display in Markdown.
 
 Languages: English | [简体中文](README.zh-CN.md)
 
