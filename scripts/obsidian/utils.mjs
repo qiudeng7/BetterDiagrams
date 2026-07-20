@@ -1,4 +1,4 @@
-import { access, cp, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { access, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, basename, join } from 'node:path';
 import { homedir } from 'node:os';
@@ -71,14 +71,16 @@ export async function installPluginFiles() {
 	for (const file of ['manifest.json', 'main.js', 'styles.css']) {
 		await access(join(distDir, file));
 	}
-
 	await mkdir(pluginDir, { recursive: true });
+	await Promise.all([
+		rm(join(pluginDir, 'drawio'), { recursive: true, force: true }),
+		rm(join(pluginDir, 'tldraw-assets'), { recursive: true, force: true }),
+	]);
 	await Promise.all(
 		['manifest.json', 'main.js', 'styles.css'].map((file) =>
 			cp(join(distDir, file), join(pluginDir, file)),
 		),
 	);
-
 	const enabledPluginsPath = join(vaultDir, '.obsidian', 'community-plugins.json');
 	const enabledPlugins = await readEnabledPlugins(enabledPluginsPath);
 

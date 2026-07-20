@@ -45,3 +45,8 @@
 	border: 0;
 	background: white;
 }
+
+.better-diagram-tldraw {
+	min-height: 0;
+	flex: 1;
+}

@@ -2,6 +2,10 @@
 
 BetterDiagram is an Obsidian plugin prototype for editing SVG-backed diagrams from Markdown.
 
+Use the `Insert a new Drawio diagram` or `Insert a new tldraw diagram` command to create a diagram;
+double-click its rendered SVG to reopen the matching editor. The editable project data remains embedded
+in the SVG. Both editors load their UI resources from their official online services.
+
 > **Breaking rename:** the plugin ID is now `better-diagram`. Remove the old plugin directory before installing this version. SVG files carrying the former metadata attribute are not supported by BetterDiagram.
 
 Languages: English | [简体中文](README.zh-CN.md)
@@ -13,6 +17,7 @@ Install dependencies:
 ```bash
 pnpm install
 ```
+
 
 Development commands always use this repository's `test-vault`. Enable the Obsidian CLI manually at `Settings -> About -> Advanced -> Obsidian command line`, then check that it is available:
 

@@ -2,6 +2,9 @@
 
 BetterDiagram 是一个 Obsidian 插件原型，用于从 Markdown 编辑基于 SVG 的图表。
 
+使用 `Insert a new Drawio diagram` 或 `Insert a new tldraw diagram` 命令创建图表；双击渲染后的
+SVG 即可重新打开对应编辑器。可编辑的项目数据始终嵌入在 SVG 中；两个编辑器的 UI 资源均从其官方在线服务加载。
+
 > **破坏性改名：** 插件 ID 已改为 `better-diagram`。安装此版本前请删除旧插件目录；携带旧元数据属性的 SVG 文件不再受 BetterDiagram 支持。
 
 语言：[English](README.md) | 简体中文
@@ -13,6 +16,7 @@ BetterDiagram 是一个 Obsidian 插件原型，用于从 Markdown 编辑基于 
 ```bash
 pnpm install
 ```
+
 
 开发命令固定使用仓库内的 `test-vault`。请先在 `Settings -> About -> Advanced -> Obsidian command line` 中手动启用 Obsidian CLI，然后检查 CLI 是否可用：
 

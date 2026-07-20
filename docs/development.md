@@ -38,6 +38,7 @@ test-vault/.obsidian/plugins/better-diagram/
 
 同时确保 `better-diagram` 已写入 `test-vault/.obsidian/community-plugins.json`。
 
+
 ## 4. 打开测试 Vault
 
 ```bash

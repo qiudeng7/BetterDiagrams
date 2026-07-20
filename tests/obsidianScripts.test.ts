@@ -48,6 +48,7 @@ describe('Obsidian development scripts', () => {
 		expect(script).toContain('await buildAndInstallPlugin()');
 	});
 
+
 	test('opens the registered test vault by URI', () => {
 		const script = readFileSync(new URL('../scripts/obsidian/open-vault.mjs', import.meta.url), 'utf8');
 

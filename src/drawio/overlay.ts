@@ -1,7 +1,5 @@
 import { App, MarkdownView, Notice, TFile } from 'obsidian';
-import {
-	refreshMarkdownView,
-} from '../obsidian/markdownRefresh';
+import { refreshMarkdownView } from '../obsidian/markdownRefresh';
 import type { DiagramRefreshStrategy } from '../settings';
 import { embedDiagramMetadata, extractDiagramMetadata } from '../svg/metadata';
 import {
