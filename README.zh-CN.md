@@ -1,6 +1,6 @@
 # BetterDiagram
 
-BetterDiagram 让你直接在 Obsidian Markdown 中创建和编辑基于 SVG 的 draw.io 与 tldraw 图表。可编辑的项目数据会嵌入 SVG，因此图表可以随笔记一起携带。
+在 Obsidian 内双击 SVG 图片，即可打开内置的 draw.io 或 tldraw 编辑器来编辑图片。使用 insert 命令创建 draw.io 或 tldraw 图表，然后直接双击图片开始编辑。工程信息会保存在 SVG 的 metadata 中，导出的 SVG 内容保留在 SVG 本体中，用于在 Markdown 内显示。
 
 语言：[English](README.md) | 简体中文
 
@@ -27,7 +27,7 @@ BRAT 会检查仓库的 GitHub Release 更新；需要时可运行 **BRAT: Check
 
 ## 使用
 
-1. 在 Markdown 笔记中运行 **Insert a new Drawio diagram** 或 **Insert a new tldraw diagram**。
+1. 在 Markdown 笔记中运行命令 **Insert a new Drawio diagram** 或 **Insert a new tldraw diagram**。
 2. 编辑图表并保存。
 3. 随时双击渲染后的 SVG，即可在其原始编辑器中重新打开。
 

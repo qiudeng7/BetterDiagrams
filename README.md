@@ -1,6 +1,6 @@
 # BetterDiagram
 
-BetterDiagram lets you create and edit SVG-backed draw.io and tldraw diagrams directly from Obsidian Markdown. The editable project data stays embedded in the SVG, so the image remains portable with your notes.
+Double-click an SVG image in Obsidian to edit it with the built-in draw.io or tldraw editor. Use an insert command to create a draw.io or tldraw diagram, then double-click the image to start editing. Project data is stored in the SVG metadata, while the exported SVG content remains in the SVG itself for display in Markdown.
 
 Languages: English | [简体中文](README.zh-CN.md)
 
