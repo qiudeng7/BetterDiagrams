@@ -7,8 +7,11 @@
 	"scripts": {
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"test": "vitest run",
-		"obsidian:start": "bash scripts/test-obsidian.sh --start",
-		"obsidian:reload": "bash scripts/test-obsidian.sh --reload"
+		"obsidian:check": "node scripts/obsidian/check-cli.mjs",
+		"obsidian:vault:create": "node scripts/obsidian/create-vault.mjs",
+		"obsidian:plugin:install": "node scripts/obsidian/install-plugin.mjs",
+		"obsidian:vault:open": "node scripts/obsidian/open-vault.mjs",
+		"obsidian:plugin:reload": "node scripts/obsidian/reload-plugin.mjs"
 	},
 	"keywords": [
 		"obsidian",

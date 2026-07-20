@@ -14,41 +14,25 @@ Install dependencies:
 pnpm install
 ```
 
-The development script uses this repository's `test-vault` by default. Override it with `VAULT_DIR` when needed.
+Development commands always use this repository's `test-vault`. Enable the Obsidian CLI manually at `Settings -> About -> Advanced -> Obsidian command line`, then check that it is available:
 
 ```bash
-export VAULT_DIR="/path/to/test-vault"
+pnpm obsidian:check
 ```
 
-The vault must already be registered in Obsidian because the development script opens it by vault name.
-
-On macOS, the script uses the `obsidian` command on `PATH` or the standard application path. On WSL, set `OBSIDIAN_PATH` if no Windows candidate is found.
+Create the development vault. The first time only, register this folder through Obsidian's vault manager with **Open folder as vault**. Then install the built plugin and open it:
 
 ```bash
-export OBSIDIAN_PATH="/mnt/d/APP/Obsidian/Obsidian.exe"
+pnpm obsidian:vault:create
+pnpm obsidian:plugin:install
+pnpm obsidian:vault:open
 ```
 
-Enable the Obsidian CLI at `Obsidian Settings -> About -> Advanced`.
-
-After that, use the package scripts below. See `scripts/test-obsidian.sh` comments for implementation details.
-
-Install the built plugin into the local development vault and launch Obsidian:
+After changing code, install and reload the plugin in the already-open vault:
 
 ```bash
-pnpm obsidian:start
+pnpm obsidian:plugin:install
+pnpm obsidian:plugin:reload
 ```
 
-Install the built plugin and reload it in an already-running Obsidian window:
-
-```bash
-pnpm obsidian:reload
-```
-
-Pass script options after `--`:
-
-```bash
-pnpm obsidian:start -- --vault-name "My Vault"
-pnpm obsidian:reload -- --skip-build
-```
-
-See [开发流程](docs/development.md) for the full WSL + Windows Obsidian workflow.
+See [开发流程](docs/development.md) for all commands.
