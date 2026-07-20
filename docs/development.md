@@ -76,3 +76,5 @@ git push origin 0.1.0
 ```
 
 GitHub Actions 会安装锁定依赖、运行测试、构建插件，并创建同名 GitHub Release。Release 会附带供 Obsidian 和 BRAT 使用的 `main.js`、`manifest.json`、`styles.css`。
+
+工作流也支持在 GitHub Actions 页面手动运行。手动运行时输入已有的版本标签，可用于重跑发布；这也适用于由自动化令牌推送标签、导致 GitHub 不产生 `push` 工作流事件的场景。
