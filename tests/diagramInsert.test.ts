@@ -3,8 +3,8 @@ import {
 	createDrawioDiagramFilename,
 	createInitialDrawioSvg,
 	createMarkdownImageEmbed,
-} from '../src/diagramInsert';
-import { extractDiagramMetadata } from '../src/svgMetadata';
+} from '../src/drawio/diagram';
+import { extractDiagramMetadata } from '../src/svg/metadata';
 
 describe('diagram insertion helpers', () => {
 	test('creates deterministic draw.io svg filenames', () => {

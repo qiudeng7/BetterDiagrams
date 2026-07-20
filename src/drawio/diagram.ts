@@ -1,5 +1,5 @@
-import { createBlankDrawioXml } from './drawioProtocol';
-import { embedDiagramMetadata } from './svgMetadata';
+import { embedDiagramMetadata } from '../svg/metadata';
+import { createBlankDrawioXml } from './protocol';
 
 export function createDrawioDiagramFilename(date = new Date()): string {
 	const year = date.getFullYear();
@@ -23,10 +23,7 @@ export function createInitialDrawioSvg(): string {
 	return embedDiagramMetadata(svg, {
 		schemaVersion: 1,
 		editor: 'drawio',
-		project: {
-			format: 'drawio-mxfile',
-			data: createBlankDrawioXml(),
-		},
+		project: { format: 'drawio-mxfile', data: createBlankDrawioXml() },
 	});
 }
 

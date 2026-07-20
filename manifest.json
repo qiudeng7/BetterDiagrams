@@ -1,6 +1,6 @@
 {
-	"id": "common-markdown-diagram-editor",
-	"name": "Common Markdown Diagram Editor",
+	"id": "better-diagram",
+	"name": "BetterDiagram",
 	"version": "0.1.0",
 	"minAppVersion": "1.0.0",
 	"description": "Edit SVG-backed diagrams from Markdown while preserving embedded editor metadata.",

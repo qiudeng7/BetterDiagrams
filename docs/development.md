@@ -47,7 +47,7 @@ package scripts 会调用 `scripts/test-obsidian.sh`。
 默认配置：
 
 ```bash
-PLUGIN_ID="common-markdown-diagram-editor"
+PLUGIN_ID="better-diagram"
 VAULT_DIR=""
 VAULT_NAME="test-vault"
 OBSIDIAN_PATH=""
@@ -93,9 +93,9 @@ bash scripts/test-obsidian.sh --reload --skip-build
 
 1. 除非传入 `--skip-build`，否则运行 `pnpm build`。
 2. 检查 `dist/main.js`、`dist/manifest.json` 和 `dist/styles.css` 是否存在。
-3. 如果需要，创建 `test-vault/.obsidian/plugins/common-markdown-diagram-editor/`。
+3. 如果需要，创建 `test-vault/.obsidian/plugins/better-diagram/`。
 4. 将三个 `dist/` 文件复制到该插件目录。
-5. 将 `common-markdown-diagram-editor` 写入 `test-vault/.obsidian/community-plugins.json`。
+5. 将 `better-diagram` 写入 `test-vault/.obsidian/community-plugins.json`。
 
 随后根据模式执行不同操作。
 
@@ -108,7 +108,7 @@ obsidian://open?vault=test-vault
 `obsidian:reload` 执行：
 
 ```bash
-obsidian vault=test-vault plugin:reload id=common-markdown-diagram-editor
+obsidian vault=test-vault plugin:reload id=better-diagram
 ```
 
 ## Vault 名称
@@ -140,5 +140,5 @@ test-vault/.obsidian/community-plugins.json
 其中应包含：
 
 ```json
-["common-markdown-diagram-editor"]
+["better-diagram"]
 ```

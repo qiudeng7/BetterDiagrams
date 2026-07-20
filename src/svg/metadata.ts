@@ -9,11 +9,11 @@ export interface DiagramProject {
 	data: string;
 }
 
-const METADATA_ATTRIBUTE = 'data-common-markdown-diagram-editor';
+const METADATA_ATTRIBUTE = 'data-better-diagram';
 const EXISTING_METADATA_PATTERN =
-	/<metadata\b[^>]*\bdata-common-markdown-diagram-editor="[^"]*"[^>]*(?:\/>|>[\s\S]*?<\/metadata>)\s*/gi;
+	/<metadata\b[^>]*\bdata-better-diagram="[^"]*"[^>]*(?:\/>|>[\s\S]*?<\/metadata>)\s*/gi;
 const METADATA_PATTERN =
-	/<metadata\b[^>]*\bdata-common-markdown-diagram-editor="([^"]+)"[^>]*(?:\/>|>[\s\S]*?<\/metadata>)/i;
+	/<metadata\b[^>]*\bdata-better-diagram="([^"]+)"[^>]*(?:\/>|>[\s\S]*?<\/metadata>)/i;
 const SVG_OPEN_TAG_PATTERN = /<svg\b[^>]*>/i;
 
 export function embedDiagramMetadata(svg: string, metadata: DiagramMetadata): string {
@@ -33,8 +33,7 @@ export function embedDiagramMetadata(svg: string, metadata: DiagramMetadata): st
 }
 
 export function extractDiagramMetadata(svg: string): DiagramMetadata | null {
-	const match = METADATA_PATTERN.exec(svg);
-	const encodedMetadata = match?.[1];
+	const encodedMetadata = METADATA_PATTERN.exec(svg)?.[1];
 
 	if (!encodedMetadata) {
 		return null;
@@ -42,15 +41,10 @@ export function extractDiagramMetadata(svg: string): DiagramMetadata | null {
 
 	try {
 		const value: unknown = JSON.parse(decodeBase64Utf8(encodedMetadata));
-
-		if (isDiagramMetadata(value)) {
-			return value;
-		}
+		return isDiagramMetadata(value) ? value : null;
 	} catch {
 		return null;
 	}
-
-	return null;
 }
 
 function isDiagramMetadata(value: unknown): value is DiagramMetadata {

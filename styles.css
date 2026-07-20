@@ -1,14 +1,4 @@
-.common-markdown-diagram-editor-modal {
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
-}
-
-.common-markdown-diagram-editor-modal code {
-	word-break: break-all;
-}
-
-.common-markdown-diagram-editor-overlay {
+.better-diagram-overlay {
 	position: fixed;
 	inset: 0;
 	z-index: 2147483647;
@@ -17,7 +7,7 @@
 	background: var(--background-primary);
 }
 
-.common-markdown-diagram-editor-toolbar {
+.better-diagram-toolbar {
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -30,11 +20,11 @@
 	-webkit-app-region: drag;
 }
 
-.common-markdown-diagram-editor-toolbar button {
+.better-diagram-toolbar button {
 	-webkit-app-region: no-drag;
 }
 
-.common-markdown-diagram-editor-title {
+.better-diagram-title {
 	min-width: 0;
 	flex: 1;
 	overflow: hidden;
@@ -43,12 +33,12 @@
 	font-weight: 600;
 }
 
-.common-markdown-diagram-editor-status {
+.better-diagram-status {
 	color: var(--text-muted);
 	font-size: var(--font-ui-smaller);
 }
 
-.common-markdown-diagram-editor-frame {
+.better-diagram-frame {
 	width: 100%;
 	min-height: 0;
 	flex: 1;

@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from 'vitest';
-import { captureMarkdownScroll, refreshMarkdownView } from '../src/markdownRefresh';
+import { captureMarkdownScroll, refreshMarkdownView } from '../src/obsidian/markdownRefresh';
 
 describe('markdown refresh helpers', () => {
 	test('captures preview scroll and restores it after rerender', async () => {

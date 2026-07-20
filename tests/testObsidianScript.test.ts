@@ -6,7 +6,7 @@ import { describe, expect, test } from 'vitest';
 
 describe('test-obsidian script', () => {
 	test('copies built plugin files into a development vault without launching Obsidian', () => {
-		const tempRoot = mkdtempSync(join(tmpdir(), 'common-markdown-diagram-editor-'));
+		const tempRoot = mkdtempSync(join(tmpdir(), 'better-diagram-'));
 		const vaultPath = join(tempRoot, 'test-vault');
 
 		try {
@@ -25,7 +25,7 @@ describe('test-obsidian script', () => {
 				vaultPath,
 				'.obsidian',
 				'plugins',
-				'common-markdown-diagram-editor',
+				'better-diagram',
 			);
 
 			expect(existsSync(join(pluginDir, 'manifest.json'))).toBe(true);
@@ -36,7 +36,7 @@ describe('test-obsidian script', () => {
 				readFileSync(join(pluginDir, 'manifest.json'), 'utf8'),
 			) as { id: string };
 
-			expect(manifest.id).toBe('common-markdown-diagram-editor');
+			expect(manifest.id).toBe('better-diagram');
 
 			const enabledPlugins = JSON.parse(
 				readFileSync(
@@ -45,7 +45,7 @@ describe('test-obsidian script', () => {
 				),
 			) as string[];
 
-			expect(enabledPlugins).toContain('common-markdown-diagram-editor');
+			expect(enabledPlugins).toContain('better-diagram');
 		} finally {
 			rmSync(tempRoot, { recursive: true, force: true });
 		}

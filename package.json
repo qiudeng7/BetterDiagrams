@@ -1,5 +1,5 @@
 {
-	"name": "common-markdown-diagram-editor",
+	"name": "better-diagram",
 	"version": "0.1.0",
 	"description": "Edit SVG-backed diagrams from Markdown in Obsidian.",
 	"main": "dist/main.js",

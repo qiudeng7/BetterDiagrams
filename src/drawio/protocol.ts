@@ -1,4 +1,4 @@
-import type { DiagramMetadata } from './svgMetadata';
+import type { DiagramMetadata } from '../svg/metadata';
 
 export const DRAWIO_EMBED_ORIGIN = 'https://embed.diagrams.net';
 
@@ -27,7 +27,7 @@ export function createDrawioEmbedUrl(): string {
 }
 
 export function createBlankDrawioXml(): string {
-	return '<mxfile host="CommonMarkdownDiagramEditor"><diagram name="Page-1"><mxGraphModel><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel></diagram></mxfile>';
+	return '<mxfile host="BetterDiagram"><diagram name="Page-1"><mxGraphModel><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel></diagram></mxfile>';
 }
 
 export function parseDrawioMessage(data: unknown): DrawioMessage | null {
@@ -78,11 +78,7 @@ export function decodeDrawioSvgData(data: string): string {
 	const metadata = data.slice(0, commaIndex);
 	const payload = data.slice(commaIndex + 1);
 
-	if (metadata.endsWith(';base64')) {
-		return decodeBase64Utf8(payload);
-	}
-
-	return decodeURIComponent(payload);
+	return metadata.endsWith(';base64') ? decodeBase64Utf8(payload) : decodeURIComponent(payload);
 }
 
 function decodeBase64Utf8(value: string): string {

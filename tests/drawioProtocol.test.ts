@@ -5,7 +5,7 @@ import {
 	decodeDrawioSvgData,
 	getDrawioXmlFromMetadata,
 	parseDrawioMessage,
-} from '../src/drawioProtocol';
+} from '../src/drawio/protocol';
 
 describe('drawio protocol helpers', () => {
 	test('creates an embed url that uses draw.io json postMessage protocol', () => {

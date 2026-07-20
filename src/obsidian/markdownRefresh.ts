@@ -22,10 +22,7 @@ export interface MarkdownViewLike {
 
 export interface MarkdownScrollSnapshot {
 	modeScroll?: number;
-	editorScroll?: {
-		left: number;
-		top: number;
-	};
+	editorScroll?: { left: number; top: number };
 }
 
 export function captureMarkdownScroll(view: MarkdownViewLike | null): MarkdownScrollSnapshot | null {
@@ -74,7 +71,5 @@ export async function refreshMarkdownView(
 }
 
 function waitForAnimationFrame(): Promise<void> {
-	return new Promise((resolve) => {
-		requestAnimationFrame(() => resolve());
-	});
+	return new Promise((resolve) => requestAnimationFrame(() => resolve()));
 }

@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest';
 import {
 	embedDiagramMetadata,
 	extractDiagramMetadata,
-} from '../src/svgMetadata';
+} from '../src/svg/metadata';
 
 describe('svg diagram metadata', () => {
 	test('round-trips project metadata without changing renderable svg content', () => {
@@ -22,7 +22,7 @@ describe('svg diagram metadata', () => {
 		expect(extractDiagramMetadata(updated)).toEqual(metadata);
 	});
 
-	test('replaces existing common markdown diagram metadata', () => {
+	test('replaces existing BetterDiagram metadata', () => {
 		const svg = '<svg xmlns="http://www.w3.org/2000/svg"><circle r="5" /></svg>';
 		const first = embedDiagramMetadata(svg, {
 			schemaVersion: 1,
@@ -42,7 +42,7 @@ describe('svg diagram metadata', () => {
 			},
 		});
 
-		expect(updated.match(/common-markdown-diagram-editor/g)).toHaveLength(1);
+		expect(updated.match(/data-better-diagram/g)).toHaveLength(1);
 		expect(extractDiagramMetadata(updated)).toEqual({
 			schemaVersion: 1,
 			editor: 'tldraw',
@@ -55,12 +55,23 @@ describe('svg diagram metadata', () => {
 
 	test('ignores metadata without project data', () => {
 		const encoded = btoa(JSON.stringify({ schemaVersion: 1, editor: 'drawio' }));
-		const broken = `<svg><metadata data-common-markdown-diagram-editor="${encoded}"></metadata></svg>`;
+		const broken = `<svg><metadata data-better-diagram="${encoded}"></metadata></svg>`;
 
 		expect(extractDiagramMetadata(broken)).toBeNull();
 	});
 
-	test('returns null when svg has no common markdown diagram metadata', () => {
+	test('does not read legacy metadata', () => {
+		const encoded = btoa(JSON.stringify({
+			schemaVersion: 1,
+			editor: 'drawio',
+			project: { format: 'drawio-mxfile', data: '<mxfile />' },
+		}));
+		const legacySvg = `<svg><metadata data-common-markdown-diagram-editor="${encoded}"></metadata></svg>`;
+
+		expect(extractDiagramMetadata(legacySvg)).toBeNull();
+	});
+
+	test('returns null when svg has no BetterDiagram metadata', () => {
 		expect(extractDiagramMetadata('<svg><metadata>other</metadata></svg>')).toBeNull();
 	});
 });

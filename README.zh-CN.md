@@ -1,6 +1,8 @@
-# Common Markdown Diagram Editor
+# BetterDiagram
 
-一个 Obsidian 插件原型，用于从 Markdown 编辑基于 SVG 的图表。
+BetterDiagram 是一个 Obsidian 插件原型，用于从 Markdown 编辑基于 SVG 的图表。
+
+> **破坏性改名：** 插件 ID 已改为 `better-diagram`。安装此版本前请删除旧插件目录；携带旧元数据属性的 SVG 文件不再受 BetterDiagram 支持。
 
 语言：[English](README.md) | 简体中文
 

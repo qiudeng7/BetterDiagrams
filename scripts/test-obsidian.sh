@@ -18,7 +18,7 @@
 set -euo pipefail
 
 # Obsidian community plugin id. Must match manifest.json and the target plugin folder name.
-PLUGIN_ID="common-markdown-diagram-editor"
+PLUGIN_ID="better-diagram"
 
 # Absolute path to this script and repository root. Used so the script works from any cwd.
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
@@ -196,7 +196,7 @@ resolve_vault_dir() {
 
 	local candidates=(
 		"$ROOT_DIR/test-vault"
-		"/Users/qiudeng/workspace/common-markdown-diagram-editor/test-vault"
+		"/Users/qiudeng/workspace/BetterDiagram/test-vault"
 		"/mnt/c/Users/qiudeng/Desktop/test-vault"
 	)
 

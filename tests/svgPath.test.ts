@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { normalizeSvgPath } from '../src/svgPath';
+import { normalizeSvgPath } from '../src/svg/path';
 
 describe('normalizeSvgPath', () => {
 	test('keeps vault-relative svg paths', () => {
