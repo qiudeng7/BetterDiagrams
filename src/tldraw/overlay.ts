@@ -15,6 +15,12 @@ export class TldrawDiagramOverlay {
 	private dirty = false;
 	private closed = false;
 	private snapshot: Record<string, unknown> | null = null;
+	private autosaveTimer: number | null = null;
+	private savePromise: Promise<boolean> | null = null;
+	private changeVersion = 0;
+	private savedVersion = 0;
+
+	private static readonly AUTOSAVE_DELAY_MS = 1_000;
 
 	constructor(
 		private readonly app: App,
@@ -57,8 +63,7 @@ export class TldrawDiagramOverlay {
 		titleEl.className = 'better-diagram-title';
 		titleEl.textContent = this.file.path;
 		toolbarEl.appendChild(titleEl);
-		toolbarEl.append(this.createButton('Save', () => void this.save()));
-		toolbarEl.append(this.createButton('Close', () => this.closeWithPrompt()));
+		toolbarEl.append(this.createButton('Close', () => void this.closeWithSave()));
 
 		const editorEl = document.createElement('div');
 		editorEl.className = 'better-diagram-tldraw';
@@ -82,7 +87,9 @@ export class TldrawDiagramOverlay {
 
 		this.editor = editor;
 		this.stopListening = editor.store.listen(() => {
+			this.changeVersion += 1;
 			this.dirty = true;
+			this.scheduleAutosave();
 		});
 	}
 
@@ -94,10 +101,64 @@ export class TldrawDiagramOverlay {
 		return buttonEl;
 	}
 
-	private async save(): Promise<void> {
+	private scheduleAutosave(): void {
+		if (this.closed) {
+			return;
+		}
+
+		if (this.autosaveTimer !== null) {
+			window.clearTimeout(this.autosaveTimer);
+		}
+
+		this.autosaveTimer = window.setTimeout(() => {
+			this.autosaveTimer = null;
+			void this.save();
+		}, TldrawDiagramOverlay.AUTOSAVE_DELAY_MS);
+	}
+
+	private clearAutosaveTimer(): void {
+		if (this.autosaveTimer !== null) {
+			window.clearTimeout(this.autosaveTimer);
+			this.autosaveTimer = null;
+		}
+	}
+
+	private async save(): Promise<boolean> {
+		this.clearAutosaveTimer();
+
+		if (this.savePromise) {
+			const previousSaveSucceeded = await this.savePromise;
+
+			if (!previousSaveSucceeded) {
+				return false;
+			}
+		}
+
+		if (!this.dirty) {
+			return true;
+		}
+
 		if (!this.editor) {
 			new Notice('tldraw is still loading.');
-			return;
+			return false;
+		}
+
+		const versionToSave = this.changeVersion;
+		const savePromise = this.persist(versionToSave);
+		this.savePromise = savePromise;
+
+		try {
+			return await savePromise;
+		} finally {
+			if (this.savePromise === savePromise) {
+				this.savePromise = null;
+			}
+		}
+	}
+
+	private async persist(versionToSave: number): Promise<boolean> {
+		if (!this.editor) {
+			return false;
 		}
 
 		try {
@@ -108,7 +169,8 @@ export class TldrawDiagramOverlay {
 				project: { format: TLDRAW_PROJECT_FORMAT, data: JSON.stringify(getSnapshot(this.editor.store)) },
 			});
 			await this.app.vault.modify(this.file, updatedSvg);
-			this.dirty = false;
+			this.savedVersion = Math.max(this.savedVersion, versionToSave);
+			this.dirty = this.savedVersion < this.changeVersion;
 
 			try {
 				await refreshMarkdownView(this.sourceView, this.refreshStrategy);
@@ -116,20 +178,30 @@ export class TldrawDiagramOverlay {
 				new Notice(`Diagram saved, but the Markdown tab could not be refreshed: ${formatError(error)}`);
 			}
 
-			new Notice('Diagram saved.');
+			if (this.dirty) {
+				this.scheduleAutosave();
+			}
+
+			return true;
 		} catch (error) {
 			new Notice(`Failed to save tldraw diagram: ${formatError(error)}`);
+			return false;
 		}
 	}
 
-	private closeWithPrompt(): void {
-		if (this.dirty && !window.confirm('Close the diagram editor and discard unsaved changes?')) {
+	private async closeWithSave(): Promise<void> {
+		const saved = await this.save();
+
+		if (!saved) {
+			new Notice('Diagram was not closed because saving failed.');
 			return;
 		}
+
 		this.close();
 	}
 
 	private close(): void {
+		this.clearAutosaveTimer();
 		this.closed = true;
 		this.stopListening?.();
 		this.stopListening = null;
